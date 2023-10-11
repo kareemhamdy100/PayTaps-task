@@ -50,6 +50,15 @@ The `database` package includes essential functions:
 
 ## Service Function
 The most critical function in this project is service.MakeTransaction. It accepts transaction data, ensures validity, and updates the accounts with new balances based on the provided amounts.
+### Handling Concurrent Requests for Transactions
+
+To manage concurrent requests for transactions, I've implemented an approach that minimizes contention and ensures that no two transactions occur for the same account simultaneously.
+
+**AccountsLocks Map:** I maintain an `AccountsLocks` map where each account's ID maps to a corresponding `mutex`. This map allows me to coordinate access to accounts, ensuring that only one operation can be performed on an account at a time.
+
+**`tryToLock()` Function:** I've introduced the `tryToLock()` function. If this function returns `false`, it means that the account is currently being processed by another thread. In such cases, I return an error response to the client. This approach guarantees that no two transactions can be executed concurrently for the same account, and it also enables the system to continue processing transactions for different accounts concurrently.
+
+By using this approach, I aim to achieve good performance while maintaining data consistency and avoiding race conditions.
 
 ## Future Enhancements
 
